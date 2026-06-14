@@ -72,8 +72,8 @@ while [[ $# -gt 0 ]]; do
       echo "  CLASH_UA              User-Agent string"
       echo "  CLASH_INTERVAL        Daemon poll interval (seconds)"
       echo "  CLASH_LOG_FILE        Log file path"
-      echo "  CLASH_RETRY           Max retry attempts
-  CLASH_RETRY_DELAY     Retry interval (seconds)"
+      echo "  CLASH_RETRY           Max retry attempts"
+      echo "  CLASH_RETRY_DELAY     Retry interval (seconds)"
       echo "  CLASH_TIMEOUT         curl connect timeout (seconds)"
       echo "  CLASH_CONF            Config file path"
       exit 0 ;;
