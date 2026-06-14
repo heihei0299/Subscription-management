@@ -128,6 +128,25 @@ validate_config() {
   return "$errors"
 }
 
+restart_service() {
+  if command -v systemctl &>/dev/null; then
+    echo "[Mihomo] Restarting mihomo.service..."
+    log "OK" "Restarting mihomo.service..."
+    if systemctl restart mihomo.service 2>>"$LOG_FILE"; then
+      local status
+      status=$(systemctl is-active mihomo.service 2>/dev/null || echo "unknown")
+      echo "[Mihomo] Status: $status"
+      log "OK" "mihomo.service status: $status"
+    else
+      echo "[Mihomo] Restart failed" >&2
+      log "FAIL" "mihomo.service restart failed"
+    fi
+  else
+    echo "[Mihomo] systemctl not available, skipping restart"
+    log "WARN" "systemctl not found, mihomo restart skipped"
+  fi
+}
+
 fetch_and_save() {
   local url="$1"
   local outdir="$2"
@@ -219,9 +238,13 @@ if [[ -n "${DAEMON:-}" ]]; then
   echo "Daemon mode — polling every ${INTERVAL}s, logging to $LOG_FILE"
 
   while true; do
-    fetch_and_save "$SUBSCRIPTION_URL" "$OUTPUT_DIR"
+    if fetch_and_save "$SUBSCRIPTION_URL" "$OUTPUT_DIR"; then
+      restart_service
+    fi
     sleep "$INTERVAL"
   done
 else
-  fetch_and_save "$SUBSCRIPTION_URL" "$OUTPUT_DIR"
+  if fetch_and_save "$SUBSCRIPTION_URL" "$OUTPUT_DIR"; then
+    restart_service
+  fi
 fi

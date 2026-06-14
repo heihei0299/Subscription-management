@@ -18,6 +18,8 @@ sudo bash /etc/clash-subscription/update-clash-config
 head -5 /etc/clash/config.yaml
 ```
 
+运行后自动重启 `mihomo.service` 并输出其状态。
+
 ## 文件路径总览
 
 | 项目 | 路径 | 说明 |
@@ -149,6 +151,25 @@ sudo bash /etc/clash-subscription/update-clash-config --daemon
 
 脚本持续运行，按 `INTERVAL` 秒间隔循环拉取。
 
+## Mihomo 自动重启
+
+每次成功拉取新配置后，脚本会自动执行以下操作：
+
+```
+systemctl restart mihomo.service
+systemctl is-active mihomo.service
+```
+
+输出示例：
+
+```
+OK: config updated -> /etc/clash/config.yaml
+[Mihomo] Restarting mihomo.service...
+[Mihomo] Status: active
+```
+
+如果系统没有 systemd（如 Docker 容器），会跳过重启并输出提示。
+
 ## 日志
 
 日志默认写入 `/var/log/clash-subscription.log`，格式：
@@ -156,6 +177,8 @@ sudo bash /etc/clash-subscription/update-clash-config --daemon
 ```
 [2025-01-15 10:30:00] [OK] Subscription saved to /etc/clash/config.yaml (size: 15234 bytes, HTTP 200)
 [2025-01-15 10:30:00] [OK] Backed up existing config to /etc/clash/config.yaml.bak
+[2025-01-15 10:30:01] [OK] Restarting mihomo.service...
+[2025-01-15 10:30:01] [OK] mihomo.service status: active
 [2025-01-15 12:00:00] [WARN] Attempt 1/3 — HTTP 503, retrying in ${RETRY_DELAY}s...
 [2025-01-15 12:00:15] [FAIL] Failed to fetch subscription after 3 attempts (last HTTP 503)
 ```
