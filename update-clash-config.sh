@@ -209,6 +209,11 @@ fi
 mkdir -p "$(dirname "$LOG_FILE")"
 touch "$LOG_FILE"
 
+# Diagnostic: show which config file was loaded and where output goes
+echo "[Config] $CONF"
+echo "[Output] $OUTPUT_DIR"
+log "OK" "Config: $CONF, Output: $OUTPUT_DIR"
+
 if [[ -n "${DAEMON:-}" ]]; then
   log "OK" "Starting daemon mode (interval: ${INTERVAL}s)"
   echo "Daemon mode — polling every ${INTERVAL}s, logging to $LOG_FILE"

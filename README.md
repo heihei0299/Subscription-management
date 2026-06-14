@@ -10,9 +10,11 @@ sudo ./install.sh
 
 # 2. 编辑配置，填入订阅链接
 sudo nano /etc/clash-subscription.conf
+#   （如果直接修改项目目录中的 clash-subscription.conf，
+#     需要手动复制到 /etc/ 或用 -c 指定路径）
 
 # 3. 手动运行一次
-sudo update-clash-config
+sudo bash update-clash-config
 
 # 4. 验证
 head -5 /etc/clash/config.yaml
@@ -35,13 +37,13 @@ head -5 /etc/clash/config.yaml
 
 ```bash
 # 使用默认配置 (/etc/clash-subscription.conf)
-sudo update-clash-config
+sudo bash update-clash-config
 
 # 指定订阅 URL 和输出目录（临时覆盖）
-sudo update-clash-config -u "https://example.com/sub" -d /etc/clash
+sudo bash update-clash-config -u "https://example.com/sub" -d /etc/clash
 
 # 指定自定义配置文件（多实例）
-sudo update-clash-config -c /path/to/my-clash.conf
+sudo bash update-clash-config -c /path/to/my-clash.conf
 ```
 
 ### 命令行参数
@@ -104,7 +106,7 @@ sudo ./uninstall-cron.sh
 适用于没有 cron 的环境（Docker 容器等）：
 
 ```bash
-sudo update-clash-config --daemon
+sudo bash update-clash-config --daemon
 ```
 
 脚本会持续运行，按 `INTERVAL` 秒间隔循环拉取，日志输出到 `LOG_FILE`。
@@ -143,10 +145,10 @@ INTERVAL=21600
 
 ```bash
 # 实例 A — 机场 A
-sudo update-clash-config -c /etc/clash-a.conf
+sudo bash update-clash-config -c /etc/clash-a.conf
 
 # 实例 B — 机场 B
-sudo update-clash-config -c /etc/clash-b.conf -d /etc/clash-b
+sudo bash update-clash-config -c /etc/clash-b.conf -d /etc/clash-b
 ```
 
 ## 日志
