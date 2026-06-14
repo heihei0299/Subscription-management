@@ -8,13 +8,13 @@
 # Configuration priority:
 #   1. Command-line flags  (-u, -d, -c, --daemon)
 #   2. Environment variables
-#   3. Config file (default: /etc/clash-subscription.conf)
+#   3. Config file (default: /etc/clash-subscription/clash-subscription.conf)
 #
 
 set -euo pipefail
 
 # ─── Defaults ────────────────────────────────────────────────────────────────
-DEFAULT_CONF="/etc/clash-subscription.conf"
+DEFAULT_CONF="/etc/clash-subscription/clash-subscription.conf"
 DEFAULT_URL=""
 DEFAULT_OUTPUT_DIR="/etc/clash"
 DEFAULT_UA="ClashForAndroid/3.0.8"

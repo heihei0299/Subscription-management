@@ -1,56 +1,58 @@
 # Clash Subscription Updater
 
-一键拉取 Clash 订阅文件并定时更新。
+一键拉取 Clash / Mihomo 订阅文件并定时更新。
 
 ## 快速开始
 
 ```bash
-# 1. 安装
+# 1. 安装（复制脚本和配置到系统路径，可选注册定时任务）
 sudo ./install.sh
 
-# 2. 编辑配置，填入订阅链接
-sudo nano /etc/clash-subscription.conf
-#   （如果直接修改项目目录中的 clash-subscription.conf，
-#     需要手动复制到 /etc/ 或用 -c 指定路径）
+# 2. 编辑配置文件，填入订阅链接
+sudo nano /etc/clash-subscription/clash-subscription.conf
 
 # 3. 手动运行一次
-sudo bash update-clash-config
+sudo bash /etc/clash-subscription/update-clash-config
 
 # 4. 验证
 head -5 /etc/clash/config.yaml
 ```
 
-## 文件说明
+## 文件路径总览
 
-| 文件 | 用途 |
-|------|------|
-| `update-clash-config.sh` | 主脚本 — 拉取订阅并保存为 `config.yaml` |
-| `clash-subscription.conf` | 默认配置文件 |
-| `install.sh` | 安装到系统路径，可选注册 cron |
-| `install-cron.sh` | 单独注册定时任务 |
-| `uninstall.sh` | 完整卸载（脚本 + 配置 + cron + 数据） |
-| `uninstall-cron.sh` | 仅移除定时任务 |
+| 项目 | 路径 | 说明 |
+|------|------|------|
+| **主脚本** | `/etc/clash-subscription/update-clash-config` | `install.sh` 复制至此 |
+| **配置文件** | `/etc/clash-subscription/clash-subscription.conf` | `install.sh` 复制至此（已存在则跳过） |
+| **订阅配置** | `/etc/clash/config.yaml` | 拉取结果（`OUTPUT_DIR` 可配置） |
+| **备份文件** | `/etc/clash/config.yaml.bak` | 覆盖前自动备份 |
+| **日志文件** | `/var/log/clash-subscription.log` | 运行日志（`LOG_FILE` 可配置） |
+| **安装脚本** | `./install.sh` | 项目目录使用，不安装 |
+| **卸载脚本** | `./uninstall.sh` | 项目目录使用 |
+| **cron 安装** | `./install-cron.sh` | 单独注册定时任务 |
+| **cron 移除** | `./uninstall-cron.sh` | 移除定时任务 |
 
 ## 用法
 
-### 直接运行
+### 运行
 
 ```bash
-# 使用默认配置 (/etc/clash-subscription.conf)
-sudo bash update-clash-config
+# 使用默认配置
+sudo bash /etc/clash-subscription/update-clash-config
 
-# 指定订阅 URL 和输出目录（临时覆盖）
-sudo bash update-clash-config -u "https://example.com/sub" -d /etc/clash
+# 临时指定订阅链接和输出目录
+sudo bash /etc/clash-subscription/update-clash-config \
+  -u "https://example.com/sub" -d /etc/clash
 
-# 指定自定义配置文件（多实例）
-sudo bash update-clash-config -c /path/to/my-clash.conf
+# 使用自定义配置文件（多实例）
+sudo bash /etc/clash-subscription/update-clash-config -c /path/to/my.conf
 ```
 
 ### 命令行参数
 
 | 参数 | 说明 |
 |------|------|
-| `-c, --conf FILE` | 配置文件路径（默认 `/etc/clash-subscription.conf`） |
+| `-c, --conf FILE` | 配置文件路径（默认 `/etc/clash-subscription/clash-subscription.conf`） |
 | `-u, --url URL` | 订阅链接（覆盖配置文件和环境变量） |
 | `-d, --output-dir DIR` | 输出目录（覆盖配置文件和环境变量） |
 | `--ua, --user-agent STR` | UA 伪装字符串 |
@@ -71,7 +73,7 @@ export CLASH_URL="https://example.com/sub"
 export CLASH_OUTPUT_DIR="/data/clash"
 export CLASH_UA="ClashMeta/1.0"
 export CLASH_INTERVAL=43200
-update-clash-config
+sudo bash /etc/clash-subscription/update-clash-config
 ```
 
 完整列表：`CLASH_URL`、`CLASH_OUTPUT_DIR`、`CLASH_UA`、`CLASH_INTERVAL`、`CLASH_LOG_FILE`、`CLASH_RETRY`、`CLASH_RETRY_DELAY`、`CLASH_TIMEOUT`、`CLASH_CONF`。
@@ -80,44 +82,15 @@ update-clash-config
 
 **命令行参数 > 环境变量 > 配置文件 > 内建默认值**
 
-## 定时更新
+## 配置文件参考
 
-### 方式一：cron（推荐）
-
-```bash
-# 安装时选择注册 cron，或之后单独运行：
-sudo ./install-cron.sh
-
-# 查看已注册的定时任务
-sudo crontab -l | grep clash
-
-# 移除
-sudo ./uninstall-cron.sh
-```
-
-`INTERVAL` 配置项控制更新频率（秒），脚本会自动转换为合适的 cron 表达式：
-
-- `INTERVAL=3600` → 每小时
-- `INTERVAL=21600` → 每 6 小时（默认）
-- `INTERVAL=86400` → 每天
-
-### 方式二：daemon 模式
-
-适用于没有 cron 的环境（Docker 容器等）：
-
-```bash
-sudo bash update-clash-config --daemon
-```
-
-脚本会持续运行，按 `INTERVAL` 秒间隔循环拉取，日志输出到 `LOG_FILE`。
-
-## 配置文件参考 (`clash-subscription.conf`)
+配置文件 `/etc/clash-subscription/clash-subscription.conf`：
 
 ```ini
 # 订阅链接（必填）
 SUBSCRIPTION_URL="https://example.com/sub"
 
-# 输出目录
+# 输出目录（config.yaml 保存位置）
 OUTPUT_DIR="/etc/clash"
 
 # UA 伪装
@@ -139,17 +112,42 @@ TIMEOUT=15
 INTERVAL=21600
 ```
 
-配置文件可复制改名用于多实例，通过 `-c` 指定即可。
-
-## 多实例示例
+配置文件可复制改名用于多实例，通过 `-c` 指定路径：
 
 ```bash
-# 实例 A — 机场 A
-sudo bash update-clash-config -c /etc/clash-a.conf
-
-# 实例 B — 机场 B
-sudo bash update-clash-config -c /etc/clash-b.conf -d /etc/clash-b
+sudo bash /etc/clash-subscription/update-clash-config -c /etc/my-clash.conf
 ```
+
+## 定时更新
+
+### 方式一：cron（推荐）
+
+```bash
+# 注册定时任务
+sudo ./install-cron.sh
+
+# 查看已注册的任务
+sudo crontab -l | grep clash
+
+# 移除定时任务
+sudo ./uninstall-cron.sh
+```
+
+`INTERVAL` 配置项控制更新频率（秒），脚本会自动转换为合适的 cron 表达式：
+
+- `INTERVAL=3600` → 每小时
+- `INTERVAL=21600` → 每 6 小时（默认）
+- `INTERVAL=86400` → 每天
+
+### 方式二：daemon 模式
+
+适用于没有 cron 的环境（Docker 容器等）：
+
+```bash
+sudo bash /etc/clash-subscription/update-clash-config --daemon
+```
+
+脚本持续运行，按 `INTERVAL` 秒间隔循环拉取。
 
 ## 日志
 
@@ -169,7 +167,7 @@ sudo bash update-clash-config -c /etc/clash-b.conf -d /etc/clash-b
 sudo ./uninstall.sh
 
 # 如果配置文件不在默认路径
-sudo ./uninstall.sh -c /etc/my-clash.conf
+sudo ./uninstall.sh -c /etc/clash-subscription/clash-subscription.conf
 ```
 
-卸载步骤：移除 cron 任务 → 删除 `/usr/local/bin/update-clash-config` → 删除配置文件 → 可选删除已下载的 config.yaml/日志文件。
+卸载内容：移除 crontab 任务 → 删除 `/etc/clash-subscription/update-clash-config` → 删除配置文件 → 可选删除 `/etc/clash/config.yaml`、备份和日志。

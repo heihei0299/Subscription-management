@@ -4,12 +4,12 @@
 #
 # Usage:
 #   sudo ./uninstall.sh
-#   sudo ./uninstall.sh -c /etc/clash-subscription.conf   # specify config path
+#   sudo ./uninstall.sh -c /etc/clash-subscription/clash-subscription.conf   # specify config path
 #
 set -euo pipefail
 
-SCRIPT_DST="/usr/local/bin/update-clash-config"
-CONF_DST="/etc/clash-subscription.conf"
+SCRIPT_DST="/etc/clash-subscription/update-clash-config"
+CONF_DST="/etc/clash-subscription/clash-subscription.conf"
 OUTPUT_DIR="/etc/clash"
 LOG_FILE="/var/log/clash-subscription.log"
 

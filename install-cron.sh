@@ -2,14 +2,14 @@
 #
 # install-cron.sh — Add a cron job for periodic clash config updates
 #
-# Reads the interval from /etc/clash-subscription.conf (INTERVAL in seconds)
+# Reads the interval from /etc/clash-subscription/clash-subscription.conf (INTERVAL in seconds)
 # and converts it to a cron expression. If the config doesn't exist,
 # defaults to every 6 hours.
 #
 set -euo pipefail
 
-CONF="/etc/clash-subscription.conf"
-SCRIPT="/usr/local/bin/update-clash-config"
+CONF="/etc/clash-subscription/clash-subscription.conf"
+SCRIPT="/etc/clash-subscription/update-clash-config"
 CRON_LABEL="# clash-subscription-updater"
 
 # --- Resolve interval ---
