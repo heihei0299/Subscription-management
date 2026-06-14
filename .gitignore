@@ -1,0 +1,15 @@
+# 忽略整个 temp 目录
+temp/
+
+# 忽略任何层级的 node_modules 目录
+node_modules/
+
+# 忽略根目录下的 logs 目录（前面加 / 表示仅根目录）
+/logs/
+
+# 忽略 build 目录下所有内容，但不忽略 build 目录本身（空目录不会被 Git 追踪）
+build/* 
+
+.codegraph/
+
+.reasonix/
